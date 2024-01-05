@@ -3,6 +3,8 @@ PlantWiz is an app that will let you take care of your plants while leveraging A
 The principle is simple, take a picture of your plant, let your AI recognize the plant and prepare all the caring info. You can then validate those caring info.  
 Once your plant is registered in PlantWiz, the app will check on daily basis and, according to your preference time, will notify you (either by email, sms or in app notif) when you should water, repot or even fertilize your plant.  
 
+Frontend for [pyPlant](https://github.com/valentindegrange/pyPlant)
+
 # Getting Started
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
