@@ -7,6 +7,7 @@ import {getPlants} from "../api/api";
 
 interface QueryParams {
     ordering: string;
+    page_size: number;
     page: number;
     is_complete?: boolean; // Optional property
     needs_care?: boolean; // Optional property
@@ -21,11 +22,12 @@ const PlantsPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const loader = useRef(null);
     const observer = useRef<IntersectionObserver | null>(null);
+    const defaultPageSize = 10;
 
     const fetchPlants = useCallback(async () => {
         setIsLoading(true);
         try {
-            let queryParams: QueryParams = {'ordering': '-created', 'page': page};
+            let queryParams: QueryParams = {'ordering': '-created', 'page': page, 'page_size': defaultPageSize};
             if (plantFilter === 'needs_care') {
                 queryParams = {...queryParams, is_complete: true, needs_care: true};
             } else if (plantFilter === 'incomplete') {
@@ -88,25 +90,7 @@ const PlantsPage = () => {
                 My Plants
             </Typography>
 
-            {plants.length > 0 ? (
-                <>
-                    <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                        <Button onClick={() => handlePlantFilterChange('all')}
-                                color={plantFilter === 'all' ? 'secondary' : 'primary'}>All</Button>
-                        <Button onClick={() => handlePlantFilterChange('needs_care')}
-                                color={plantFilter === 'needs_care' ? 'secondary' : 'primary'}>Needs Care</Button>
-                        <Button onClick={() => handlePlantFilterChange('incomplete')}
-                                color={plantFilter === 'incomplete' ? 'secondary' : 'primary'}>Incomplete</Button>
-                    </ButtonGroup>
-                    <Grid container spacing={2}>
-                        {plants.map(plant => (
-                            <Grid item xs={12} sm={6} md={6} key={plant.id}>
-                                <PlantCard plant={plant}/>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </>
-            ) : (plantFilter === 'all' ? (
+            {plants.length === 0 && plantFilter === 'all' ? (
                 <Box>
                     <Typography variant="body1">
                         Welcome to WizPlant! <br/>It seems you don't have any plants yet! <br/>
@@ -122,8 +106,31 @@ const PlantsPage = () => {
                     </Button>
                 </Box>
             ) : (
-                <></>
-            ))}
+                <>
+                    <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{mb:2}}>
+                        <Button onClick={() => handlePlantFilterChange('all')}
+                                color={plantFilter === 'all' ? 'secondary' : 'primary'}>All</Button>
+                        <Button onClick={() => handlePlantFilterChange('needs_care')}
+                                color={plantFilter === 'needs_care' ? 'secondary' : 'primary'}>Needs Care</Button>
+                        <Button onClick={() => handlePlantFilterChange('incomplete')}
+                                color={plantFilter === 'incomplete' ? 'secondary' : 'primary'}>Incomplete</Button>
+                    </ButtonGroup>
+                    {plants.length === 0 ? (
+                        <Typography variant="body1">
+                            {plantFilter === 'needs_care' ? "You don't have any plants that need care!" : "You don't have any plants that are incomplete!"}
+                        </Typography>
+                    ) : (
+                        <Grid container spacing={2}>
+                            {plants.map(plant => (
+                                <Grid item xs={12} sm={6} md={6} key={plant.id}>
+                                    <PlantCard plant={plant}/>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    )}
+                </>
+
+            )}
             <div ref={loader} style={{height: "20px"}}/>
 
             {/* Plant Create Modal */}

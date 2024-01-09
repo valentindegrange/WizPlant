@@ -244,6 +244,16 @@ export const deletePlant = async (plantId: number) => {
     }
 }
 
+export const getNextPlantNeedsCareId = async () => {
+    try {
+        const response = await API.get('plants/next_needs_care/');
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 export const aiCheckPlant = async (plantId: number) => {
      try {
         const response = await API.post(`plants/${plantId}/ai_check/`);

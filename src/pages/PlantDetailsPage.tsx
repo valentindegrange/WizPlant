@@ -35,6 +35,11 @@ const PlantDetailsPage: React.FC = () => {
         fetchPlantData(); // Refetch plant data after a successful edit
     };
 
+    const handlePlantActionSuccess = () => {
+        // Refetch plant data after a successful plant action
+        fetchPlantData();
+    }
+
     return (
         <Box sx={{ p: 2 }}>
             {plant ? (
@@ -46,7 +51,7 @@ const PlantDetailsPage: React.FC = () => {
                         plant={plant}
                         onEditSuccess={handleEditSuccess}
                     />
-                    <PlantDetails plant={plant} />
+                    <PlantDetails plant={plant} onPlantActionSuccess={handlePlantActionSuccess}/>
 
 
                 </>

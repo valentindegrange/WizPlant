@@ -1,19 +1,38 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Plant} from '../types';
-import {fertilizePlant, repotPlant, waterPlant} from "../api/api";
-import { Box, Typography, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {fertilizePlant, repotPlant, waterPlant, getNextPlantNeedsCareId} from "../api/api";
+import {Box, Typography, Button, Accordion, AccordionSummary, AccordionDetails, Link} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Link as RouterLink } from "react-router-dom";
+
 
 interface PlantDetailProps {
     plant: Plant;
+    onPlantActionSuccess: () => void;
 }
 
-const PlantDetails: React.FC<PlantDetailProps> = ({plant}) => {
+const PlantDetails: React.FC<PlantDetailProps> = ({plant, onPlantActionSuccess}) => {
+    const [nextPlant, setNextPlant] = useState<any | null>(null);
+    useEffect(() => {
+        if (!plant.needs_care) {
+            fetchNextPlant();
+        }
+    }, [plant.needs_care]);
+
+
+    const fetchNextPlant = async () => {
+        const response = await getNextPlantNeedsCareId();
+        setNextPlant(response.plant);
+    }
     const handleWaterPlant = async () => {
         try {
             if (plant.id !== undefined) {
                 // Call the waterPlant function with the plant's ID
                 await waterPlant(plant.id);
+                onPlantActionSuccess();
+                if (!plant.needs_care) {
+                    fetchNextPlant();
+                }
             } else {
                 console.log('Plant ID is undefined');
             }
@@ -26,6 +45,10 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant}) => {
         try {
             if (plant.id !== undefined) {
                 await repotPlant(plant.id);
+                onPlantActionSuccess();
+                if (!plant.needs_care) {
+                    fetchNextPlant();
+                }
             } else {
                 console.log('Plant ID is undefined');
             }
@@ -39,6 +62,10 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant}) => {
         try {
             if (plant.id !== undefined) {
                 await fertilizePlant(plant.id);
+                onPlantActionSuccess();
+                if (!plant.needs_care) {
+                    fetchNextPlant();
+                }
             } else {
                 console.log('Plant ID is undefined');
             }
@@ -49,26 +76,47 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant}) => {
     };
 
     return (
-        <Box sx={{ p: 2 }}>
+        <Box sx={{p: 2}}>
             <Typography variant="h4">{plant.name}</Typography>
-            <Typography sx={{pt:2, pb:2}} variant="subtitle2" gutterBottom={true}>{plant.description}</Typography>
+            <Typography sx={{pt: 2, pb: 2}} variant="subtitle2" gutterBottom={true}>{plant.description}</Typography>
             <Box
                 component="img"
-                sx={{ maxWidth: '100%', height: 'auto' }}
+                sx={{maxWidth: '100%', height: 'auto'}}
                 src={plant.image}
                 alt={plant.name}
             />
 
-            <Button variant="contained" color={plant.should_water ? 'primary': 'secondary'}  onClick={handleWaterPlant} sx={{ m: 1 }}>💦 Water</Button>
-            <Button variant="contained" color={plant.should_repot ? 'primary': 'secondary'}  onClick={handleRepotPlant} sx={{ m: 1 }}>🪴 Repot</Button>
-            <Button variant="contained" color={plant.should_fertilize ? 'primary': 'secondary'}  onClick={handleFertilizePlant} sx={{ m: 1 }}>🧪 Fertilize</Button>
-            <Typography sx={{pt:2, pb:2}}>{plant.extra_tips}</Typography>
-            <Typography sx={{pb:2}}>{plant.needs_care ? 'Needs Care' : 'No Extra Care Needed'}</Typography>
+            {plant.needs_care ? (
+                <></>
+            ) : (
+                <Box textAlign='right'>
+                    <Typography sx={{pb: 2}}>
+                        {nextPlant ? (
+                            <Link component={RouterLink} to={`/plants/${nextPlant}`}>
+                                Next Plant
+                            </Link>
+                        ) : (
+                            <></>
+                        )}
+                    </Typography>
+                </Box>
+            )}
+            <Button variant="contained" color={plant.should_water ? 'primary' : 'secondary'}
+                    onClick={handleWaterPlant}
+                    sx={{m: 1}}>💦 Water</Button>
+            <Button variant="contained" color={plant.should_repot ? 'primary' : 'secondary'}
+                    onClick={handleRepotPlant}
+                    sx={{m: 1}}>🪴 Repot</Button>
+            <Button variant="contained" color={plant.should_fertilize ? 'primary' : 'secondary'}
+                    onClick={handleFertilizePlant} sx={{m: 1}}>🧪 Fertilize</Button>
+
+
+            <Typography sx={{pt: 2, pb: 2}}>{plant.extra_tips}</Typography>
             <Typography>🌤️ {plant.sunlight} - {plant.sun_exposure}</Typography>
             <Typography>💧 Every {plant.water_frequency} days</Typography>
             {plant.leaf_mist && <Typography>🍃💦</Typography>}
-            <Accordion sx={{mt:2, mb:2}}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{mt: 2, mb: 2}}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
                     <Typography>Caring Details</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
