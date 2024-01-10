@@ -3,7 +3,7 @@ import {Plant} from '../types';
 import {fertilizePlant, repotPlant, waterPlant, getNextPlantNeedsCareId} from "../api/api";
 import {Box, Typography, Button, Accordion, AccordionSummary, AccordionDetails, Link} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Link as RouterLink } from "react-router-dom";
+import {Link as RouterLink} from "react-router-dom";
 
 
 interface PlantDetailProps {
@@ -81,7 +81,7 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant, onPlantActionSuccess})
             <Typography sx={{pt: 2, pb: 2}} variant="subtitle2" gutterBottom={true}>{plant.description}</Typography>
             <Box
                 component="img"
-                sx={{maxWidth: '100%', height: 'auto'}}
+                sx={{maxWidth: '75%', height: 'auto', display: 'block', margin: 'auto'}}
                 src={plant.image}
                 alt={plant.name}
             />
@@ -90,7 +90,7 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant, onPlantActionSuccess})
                 <></>
             ) : (
                 <Box textAlign='right'>
-                    <Typography sx={{pb: 2}}>
+                    <Typography sx={{pt:2, pb: 2}}>
                         {nextPlant ? (
                             <Link component={RouterLink} to={`/plants/${nextPlant}`}>
                                 Next Plant
@@ -101,14 +101,16 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant, onPlantActionSuccess})
                     </Typography>
                 </Box>
             )}
-            <Button variant="contained" color={plant.should_water ? 'primary' : 'secondary'}
-                    onClick={handleWaterPlant}
-                    sx={{m: 1}}>💦 Water</Button>
-            <Button variant="contained" color={plant.should_repot ? 'primary' : 'secondary'}
-                    onClick={handleRepotPlant}
-                    sx={{m: 1}}>🪴 Repot</Button>
-            <Button variant="contained" color={plant.should_fertilize ? 'primary' : 'secondary'}
-                    onClick={handleFertilizePlant} sx={{m: 1}}>🧪 Fertilize</Button>
+            <Box textAlign='center'>
+                <Button variant="contained" color={plant.should_water ? 'primary' : 'secondary'}
+                        onClick={handleWaterPlant}
+                        sx={{m: 1}}>💦 Water</Button>
+                <Button variant="contained" color={plant.should_repot ? 'primary' : 'secondary'}
+                        onClick={handleRepotPlant}
+                        sx={{m: 1}}>🪴 Repot</Button>
+                <Button variant="contained" color={plant.should_fertilize ? 'primary' : 'secondary'}
+                        onClick={handleFertilizePlant} sx={{m: 1}}>🧪 Fertilize</Button>
+            </Box>
 
 
             <Typography sx={{pt: 2, pb: 2}}>{plant.extra_tips}</Typography>
@@ -135,7 +137,8 @@ const PlantDetails: React.FC<PlantDetailProps> = ({plant, onPlantActionSuccess})
                             <Typography>Next: {plant.next_repotting_date}</Typography>
                         </>
                     )}
-                    <Typography>Plant added: {plant.created}, last updated: {plant.updated}</Typography>
+                    <Typography>Plant added: {plant.created}</Typography>
+                    <Typography>last updated: {plant.updated}</Typography>
                 </AccordionDetails>
             </Accordion>
         </Box>

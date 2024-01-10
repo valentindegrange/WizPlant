@@ -208,7 +208,7 @@ const PlantCreateModalV2: React.FC<PlantCreateModalProps> = ({
                                 component="img"
                                 src={checkPlantResult.image}
                                 alt={checkPlantResult.json_answer?.name || "Plant Image"}
-                                sx={{maxWidth: '100%', height: 'auto', my: 2}}
+                                sx={{maxWidth: '256px', height: 'auto', my: 2}}
                             />
                         )}
                         <Box component="pre">{JSON.stringify(checkPlantResult, null, 2)}</Box>
