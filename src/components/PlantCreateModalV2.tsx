@@ -17,6 +17,7 @@ import {
     Typography,
     TextField,
 } from '@mui/material';
+import {AxiosError} from "axios";
 
 
 interface PlantCreateModalProps {
@@ -47,6 +48,7 @@ const PlantCreateModalV2: React.FC<PlantCreateModalProps> = ({
     const [checkPlantStatus, setCheckPlantStatus] = useState<
         'loading' | 'success' | 'failure' | 'not_started' | 'in_progress'
     >('not_started');
+    const [errorAIPlantCheck, setErrorAIPlantCheck] = useState<any | null>(null);
     const [checkPlantResult, setCheckPlantResult] = useState<any | null>(null);
     const [isCheckingImage, setIsCheckingImage] = useState<boolean>(false);
     const [isGeneratingImage, setIsGeneratingImage] = useState<boolean>(false);
@@ -114,13 +116,14 @@ const PlantCreateModalV2: React.FC<PlantCreateModalProps> = ({
 
                 const aiPlantAnswer = await aiCheckPlant(newPlantId);
                 const aiPlantAnswerId = aiPlantAnswer.id;
-
+                setErrorAIPlantCheck(null);
                 setCheckPlantStatus('in_progress');
 
                 await pollCheckPlant(aiPlantAnswerId);
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error creating plant or checking plant:', error);
                 setCheckPlantStatus('failure');
+                setErrorAIPlantCheck(error.response.data.error);
             }
         } else {
             try {
@@ -218,7 +221,7 @@ const PlantCreateModalV2: React.FC<PlantCreateModalProps> = ({
                 return (
                     <Box>
                         <Typography>Plant check failed:</Typography>
-                        <Typography>Error: {checkPlantResult?.error_message}</Typography>
+                        <Typography>Error: {errorAIPlantCheck || checkPlantResult?.error_message}</Typography>
                         <TextField
                             label="Name of the plant"
                             value={formData.name}
